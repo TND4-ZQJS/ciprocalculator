@@ -1,28 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>CI Pro Calculator</title>
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen;
-      background: linear-gradient(to bottom right, #e0fce7, #d5eaff);
-      padding: 2rem;
-      color: #333;
+      font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+      background: linear-gradient(to bottom right, #d8f8e1, #e2f1ff);
+      margin: 0;
+      padding: 0;
     }
 
     .container {
-      max-width: 800px;
-      margin: auto;
+      max-width: 700px;
+      margin: 40px auto;
       background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      overflow: hidden;
+      padding: 30px;
+      transition: all 0.5s ease;
     }
 
-    h1 {
-      text-align: center;
+    h2 {
+      margin-top: 0;
       color: #007f5f;
+    }
+
+    .step {
+      display: none;
+      animation: slideIn 0.4s ease;
+    }
+
+    .step.active {
+      display: block;
     }
 
     label {
@@ -33,125 +44,191 @@
 
     input {
       width: 100%;
-      padding: 8px;
-      font-size: 1rem;
+      padding: 10px;
+      margin-top: 4px;
       border: 1px solid #ccc;
-      border-radius: 6px;
-      margin-top: 0.25rem;
+      border-radius: 8px;
+      font-size: 1rem;
     }
 
-    .button {
+    .buttons {
       margin-top: 2rem;
-      background-color: #ffb703;
-      color: #000;
-      border: none;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .btn {
       padding: 12px 24px;
       font-size: 1rem;
+      border: none;
       border-radius: 8px;
       cursor: pointer;
-      width: 100%;
       font-weight: bold;
     }
 
-    .results {
-      margin-top: 2rem;
-      background: #f9f9f9;
-      padding: 1rem;
-      border-radius: 8px;
-      border: 1px dashed #ccc;
+    .btn-primary {
+      background-color: #ffb703;
+      color: #000;
     }
 
-    .result-line {
-      margin: 0.5rem 0;
-      font-size: 1.1rem;
+    .btn-secondary {
+      background-color: #ccc;
+      color: #000;
+    }
+
+    .result-box {
+      margin-top: 1.5rem;
+      background: #f0f0f0;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 1rem;
     }
 
     .highlight {
       font-weight: bold;
       color: #d00000;
     }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
   </style>
 </head>
 <body>
+  <div class="container">
+    <!-- Step 1: Personal Info -->
+    <div id="step1" class="step active">
+      <h2>Step 1: Personal Info</h2>
+      <label>Name</label><input type="text" id="name" placeholder="John Doe">
+      <label>Age</label><input type="number" id="age" value="35" min="18" max="70">
+      <label>Dependants</label><input type="number" id="dependants" value="2" min="0">
+      <div class="buttons">
+        <div></div>
+        <button class="btn btn-primary" onclick="nextStep(2)">Next</button>
+      </div>
+    </div>
 
-<div class="container">
-  <h1>CI Pro Calculator</h1>
+    <!-- Step 2: Living Expenses -->
+    <div id="step2" class="step">
+      <h2>Step 2: Monthly Living Expenses</h2>
+      <label>Income Replacement Years</label><input type="number" id="incomeYears" value="5">
+      <label>Home Loan (RM)</label><input type="number" id="homeLoan" value="3000">
+      <label>Car Loan (RM)</label><input type="number" id="carLoan" value="2000">
+      <label>Car Insurance (RM/year)</label><input type="number" id="carInsurance" value="1000">
+      <label>Parents Support (RM)</label><input type="number" id="parents" value="1000">
+      <label>Education Fund (RM)</label><input type="number" id="education" value="1000">
+      <label>Retirement Fund (RM)</label><input type="number" id="retirement" value="1000">
+      <label>Utility Bills (RM)</label><input type="number" id="utilities" value="500">
+      <label>Meals (Organic Food) (RM)</label><input type="number" id="meals" value="1000">
+      <label>Phone / Petrol / Parking (RM)</label><input type="number" id="transport" value="300">
+      <label>Leisure / Holiday (RM)</label><input type="number" id="leisure" value="50">
+      <div class="result-box" id="livingResult"></div>
+      <div class="buttons">
+        <button class="btn btn-secondary" onclick="nextStep(1)">Back</button>
+        <button class="btn btn-primary" onclick="showLivingTotal()">Show Total</button>
+      </div>
+    </div>
 
-  <!-- General Inputs -->
-  <label>Age</label>
-  <input type="number" id="age" value="35" min="18" max="70">
+    <!-- Step 3: Medical Expenses -->
+    <div id="step3" class="step">
+      <h2>Step 3: Medical Expenses</h2>
+      <label>Long-term Medication (RM)</label><input type="number" id="medication" value="1000">
+      <label>TCM / Supplements (RM)</label><input type="number" id="tcm" value="500">
+      <div class="result-box" id="medicalResult"></div>
+      <div class="buttons">
+        <button class="btn btn-secondary" onclick="nextStep(2)">Back</button>
+        <button class="btn btn-primary" onclick="showMedicalTotal()">Show Total</button>
+      </div>
+    </div>
 
-  <label>Years of Income Replacement</label>
-  <input type="number" id="incomeYears" value="5" min="1" max="20">
-
-  <!-- Living Expenses -->
-  <h3>Monthly Living Expenses</h3>
-  <label>Home Loan (RM)</label><input type="number" id="homeLoan" value="3000">
-  <label>Car Loan (RM)</label><input type="number" id="carLoan" value="2000">
-  <label>Car Insurance (RM/year)</label><input type="number" id="carInsurance" value="1000">
-  <label>Parents Support (RM)</label><input type="number" id="parents" value="1000">
-  <label>Education Fund (RM)</label><input type="number" id="education" value="1000">
-  <label>Retirement Fund (RM)</label><input type="number" id="retirement" value="1000">
-  <label>Utility Bills (RM)</label><input type="number" id="utilities" value="500">
-  <label>Meals (Organic Food) (RM)</label><input type="number" id="meals" value="1000">
-  <label>Phone / Petrol / Parking (RM)</label><input type="number" id="transport" value="300">
-  <label>Leisure / Holiday (RM)</label><input type="number" id="leisure" value="50">
-
-  <!-- Medical Expenses -->
-  <h3>Monthly Medical Expenses (Post-CI)</h3>
-  <label>Long-term Medication (RM)</label><input type="number" id="medication" value="1000">
-  <label>TCM / Supplements (RM)</label><input type="number" id="tcm" value="500">
-
-  <button class="button" onclick="calculate()">Calculate</button>
-
-  <!-- Results -->
-  <div class="results" id="result" style="display: none;">
-    <div class="result-line">🧾 <span class="highlight" id="livingTotal">...</span> — Income Replacement Total</div>
-    <div class="result-line">💊 <span class="highlight" id="medicalTotal">...</span> — Medical Expenses Total</div>
-    <div class="result-line">🧮 <span class="highlight" id="baseTotal">...</span> — CI Pro Base Total</div>
-    <div class="result-line">📈 <span class="highlight" id="inflationTotal">...</span> — Inflation-Adjusted Total (5%/yr)</div>
+    <!-- Step 4: Final Summary -->
+    <div id="step4" class="step">
+      <h2>CI Pro Summary</h2>
+      <div id="summary"></div>
+      <div class="buttons">
+        <button class="btn btn-secondary" onclick="nextStep(3)">Back</button>
+        <button class="btn btn-primary" onclick="location.reload()">Restart</button>
+      </div>
+    </div>
   </div>
-</div>
 
-<script>
-  function calculate() {
-    const age = parseInt(document.getElementById("age").value);
-    const incomeYears = parseInt(document.getElementById("incomeYears").value);
+  <script>
+    function nextStep(step) {
+      document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+      document.getElementById('step' + step).classList.add('active');
+    }
 
-    // Living expenses (monthly, except car insurance yearly)
-    const carInsurance = parseFloat(document.getElementById("carInsurance").value) / 12;
-    const expenses = [
-      "homeLoan", "carLoan", "parents", "education", "retirement",
-      "utilities", "meals", "transport", "leisure"
-    ];
+    function showLivingTotal() {
+      const incomeYears = parseInt(document.getElementById("incomeYears").value);
+      const monthly =
+        parseFloat(document.getElementById("homeLoan").value) +
+        parseFloat(document.getElementById("carLoan").value) +
+        parseFloat(document.getElementById("carInsurance").value) / 12 +
+        parseFloat(document.getElementById("parents").value) +
+        parseFloat(document.getElementById("education").value) +
+        parseFloat(document.getElementById("retirement").value) +
+        parseFloat(document.getElementById("utilities").value) +
+        parseFloat(document.getElementById("meals").value) +
+        parseFloat(document.getElementById("transport").value) +
+        parseFloat(document.getElementById("leisure").value);
+      const total = monthly * 12 * incomeYears;
+      document.getElementById("livingResult").innerHTML = `💰 Monthly Living: <span class='highlight'>RM ${monthly.toFixed(2)}</span><br>🔁 Over ${incomeYears} years: <span class='highlight'>RM ${total.toLocaleString()}</span>`;
+      setTimeout(() => nextStep(3), 1000);
+    }
 
-    let totalMonthly = carInsurance;
-    expenses.forEach(id => {
-      totalMonthly += parseFloat(document.getElementById(id).value) || 0;
-    });
+    function showMedicalTotal() {
+      const age = parseInt(document.getElementById("age").value);
+      const years = 80 - age;
+      const monthly = parseFloat(document.getElementById("medication").value) + parseFloat(document.getElementById("tcm").value);
+      const total = monthly * 12 * years;
+      document.getElementById("medicalResult").innerHTML = `💊 Monthly Medical: <span class='highlight'>RM ${monthly.toFixed(2)}</span><br>🧬 Over ${years} years: <span class='highlight'>RM ${total.toLocaleString()}</span>`;
+      setTimeout(() => calculate(), 1000);
+    }
 
-    const livingTotal = totalMonthly * 12 * incomeYears;
+    function calculate() {
+      const name = document.getElementById("name").value;
+      const age = parseInt(document.getElementById("age").value);
+      const dependants = parseInt(document.getElementById("dependants").value);
+      const yearsTo80 = 80 - age;
 
-    // Medical expenses
-    const medication = parseFloat(document.getElementById("medication").value);
-    const tcm = parseFloat(document.getElementById("tcm").value);
-    const medicalYears = 80 - age;
-    const medicalTotal = (medication + tcm) * 12 * medicalYears;
+      const incomeYears = parseInt(document.getElementById("incomeYears").value);
+      const monthlyLiving =
+        parseFloat(document.getElementById("homeLoan").value) +
+        parseFloat(document.getElementById("carLoan").value) +
+        parseFloat(document.getElementById("carInsurance").value) / 12 +
+        parseFloat(document.getElementById("parents").value) +
+        parseFloat(document.getElementById("education").value) +
+        parseFloat(document.getElementById("retirement").value) +
+        parseFloat(document.getElementById("utilities").value) +
+        parseFloat(document.getElementById("meals").value) +
+        parseFloat(document.getElementById("transport").value) +
+        parseFloat(document.getElementById("leisure").value);
 
-    const baseTotal = livingTotal + medicalTotal;
+      const livingTotal = monthlyLiving * 12 * incomeYears;
 
-    // Inflation-adjusted total (5% compound)
-    const inflationAdjusted = baseTotal * Math.pow(1.05, medicalYears);
+      const medication = parseFloat(document.getElementById("medication").value);
+      const tcm = parseFloat(document.getElementById("tcm").value);
+      const medicalTotal = (medication + tcm) * 12 * yearsTo80;
 
-    // Display results
-    document.getElementById("livingTotal").innerText = "RM " + livingTotal.toLocaleString();
-    document.getElementById("medicalTotal").innerText = "RM " + medicalTotal.toLocaleString();
-    document.getElementById("baseTotal").innerText = "RM " + baseTotal.toLocaleString();
-    document.getElementById("inflationTotal").innerText = "RM " + Math.round(inflationAdjusted).toLocaleString();
+      const baseTotal = livingTotal + medicalTotal;
+      const inflationAdjusted = baseTotal * Math.pow(1.05, yearsTo80);
 
-    document.getElementById("result").style.display = "block";
-  }
-</script>
-
+      document.getElementById("summary").innerHTML = `
+        <div>👤 <strong>${name}</strong> — Age ${age}, with <strong>${dependants}</strong> dependant(s)</div>
+        <div>🧾 Income Replacement: <span class="highlight">RM ${livingTotal.toLocaleString()}</span></div>
+        <div>💊 Medical Expenses (to age 80): <span class="highlight">RM ${medicalTotal.toLocaleString()}</span></div>
+        <div>🧮 <strong>Total CI Pro Base:</strong> <span class="highlight">RM ${baseTotal.toLocaleString()}</span></div>
+        <div>📈 <strong>Inflation-adjusted Total (5%):</strong> <span class="highlight">RM ${Math.round(inflationAdjusted).toLocaleString()}</span></div>
+      `;
+      nextStep(4);
+    }
+  </script>
 </body>
 </html>
