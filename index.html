@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CI Pro Calculator</title>
+  <style>
+    body {
+      font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+      background: linear-gradient(to bottom right, #d8f8e1, #e2f1ff);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      overflow: hidden;
+      padding: 30px;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #007f5f;
+    }
+
+    .step {
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 4px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .buttons {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-primary {
+      background-color: #ffb703;
+      color: #000;
+    }
+
+    .btn-secondary {
+      background-color: #ccc;
+      color: #000;
+    }
+
+    .result {
+      font-size: 1.1rem;
+      margin: 0.5rem 0;
+    }
+
+    .highlight {
+      font-weight: bold;
+      color: #d00000;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="step1" class="step active">
+      <h2>Step 1: Personal Info</h2>
+      <label>Name</label>
+      <input type="text" id="name" placeholder="John Doe">
+      <label>Age</label>
+      <input type="number" id="age" value="35" min="18" max="70">
+      <label>Dependants</label>
+      <input type="number" id="dependants" value="2" min="0">
+      <div class="buttons">
+        <div></div>
+        <button class="btn btn-primary" onclick="nextStep(2)">Next</button>
+      </div>
+    </div>
+
+    <div id="step2" class="step">
+      <h2>Step 2: Monthly Living Expenses</h2>
+      <label>Income Replacement Years</label><input type="number" id="incomeYears" value="5">
+      <label>Home Loan (RM)</label><input type="number" id="homeLoan" value="3000">
+      <label>Car Loan (RM)</label><input type="number" id="carLoan" value="2000">
+      <label>Car Insurance (RM/year)</label><input type="number" id="carInsurance" value="1000">
+      <label>Parents Support (RM)</label><input type="number" id="parents" value="1000">
+      <label>Education Fund (RM)</label><input type="number" id="education" value="1000">
+      <label>Retirement Fund (RM)</label><input type="number" id="retirement" value="1000">
+      <label>Utility Bills (RM)</label><input type="number" id="utilities" value="500">
+      <label>Meals (Organic Food) (RM)</label><input type="number" id="meals" value="1000">
+      <label>Phone / Petrol / Parking (RM)</label><input type="number" id="transport" value="300">
+      <label>Leisure / Holiday (RM)</label><input type="number" id="leisure" value="50">
+      <div class="buttons">
+        <button class="btn btn-secondary" onclick="nextStep(1)">Back</button>
+        <button class="btn btn-primary" onclick="nextStep(3)">Next</button>
+      </div>
+    </div>
+
+    <div id="step3" class="step">
+      <h2>Step 3: Medical Expenses</h2>
+      <label>Long-term Medication (RM)</label><input type="number" id="medication" value="1000">
+      <label>TCM / Supplements (RM)</label><input type="number" id="tcm" value="500">
+      <div class="buttons">
+        <button class="btn btn-secondary" onclick="nextStep(2)">Back</button>
+        <button class="btn btn-primary" onclick="calculate()">Finish</button>
+      </div>
+    </div>
+
+    <div id="step4" class="step">
+      <h2>CI Pro Summary</h2>
+      <div id="summary"></div>
+      <div class="buttons">
+        <button class="btn btn-secondary" onclick="nextStep(3)">Back</button>
+        <button class="btn btn-primary" onclick="location.reload()">Restart</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function nextStep(step) {
+      document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+      document.getElementById('step' + step).classList.add('active');
+    }
+
+    function calculate() {
+      const name = document.getElementById("name").value;
+      const age = parseInt(document.getElementById("age").value);
+      const dependants = parseInt(document.getElementById("dependants").value);
+      const yearsTo80 = 80 - age;
+
+      const incomeYears = parseInt(document.getElementById("incomeYears").value);
+      const monthlyLiving =
+        parseFloat(document.getElementById("homeLoan").value) +
+        parseFloat(document.getElementById("carLoan").value) +
+        parseFloat(document.getElementById("carInsurance").value) / 12 +
+        parseFloat(document.getElementById("parents").value) +
+        parseFloat(document.getElementById("education").value) +
+        parseFloat(document.getElementById("retirement").value) +
+        parseFloat(document.getElementById("utilities").value) +
+        parseFloat(document.getElementById("meals").value) +
+        parseFloat(document.getElementById("transport").value) +
+        parseFloat(document.getElementById("leisure").value);
+
+      const livingTotal = monthlyLiving * 12 * incomeYears;
+
+      const medication = parseFloat(document.getElementById("medication").value);
+      const tcm = parseFloat(document.getElementById("tcm").value);
+      const medicalTotal = (medication + tcm) * 12 * yearsTo80;
+
+      const baseTotal = livingTotal + medicalTotal;
+      const inflationAdjusted = baseTotal * Math.pow(1.05, yearsTo80);
+
+      document.getElementById("summary").innerHTML = `
+        <div class="result">👤 <strong>${name}</strong> — Age ${age}, with <strong>${dependants}</strong> dependant(s)</div>
+        <div class="result">🧾 Income Replacement: <span class="highlight">RM ${livingTotal.toLocaleString()}</span></div>
+        <div class="result">💊 Medical Expenses (to age 80): <span class="highlight">RM ${medicalTotal.toLocaleString()}</span></div>
+        <div class="result">🧮 <strong>Total CI Pro Base:</strong> <span class="highlight">RM ${baseTotal.toLocaleString()}</span></div>
+        <div class="result">📈 <strong>Inflation-adjusted Total (5%):</strong> <span class="highlight">RM ${Math.round(inflationAdjusted).toLocaleString()}</span></div>
+      `;
+      nextStep(4);
+    }
+  </script>
+</body>
+</html>
