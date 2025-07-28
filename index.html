@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CI Pro Calculator</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      background: #f4f7fb;
+      color: #333;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+      font-weight: 600;
+      color: #1e2a45;
+    }
+    .card-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 15px;
+    }
+    .card {
+      flex: 1 0 40%;
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      text-align: center;
+      font-size: 18px;
+      cursor: pointer;
+      transition: 0.3s;
+      border: 2px solid transparent;
+    }
+    .card:hover, .card.active {
+      border-color: #007aff;
+      background: #eaf2ff;
+    }
+    .step {
+      display: none;
+      animation: fadeIn 0.6s ease forwards;
+    }
+    .step.active {
+      display: block;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #007aff;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    button.secondary {
+      background: #ccc;
+      color: #333;
+    }
+    .hidden {
+      display: none;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    .form-group {
+      margin-top: 15px;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="step active" id="step1">
+      <h1>CI Pro Calculator</h1>
+      <h2>Step 1: Tell us about yourself</h2>
+      <div class="form-group">
+        <label>Your Name (optional)</label>
+        <input type="text" id="name" placeholder="e.g. Jason Lee" />
+      </div>
+      <div class="form-group">
+        <label>Select your age group:</label>
+        <div class="card-grid" id="ageGroup">
+          <div class="card" data-value="25">👶 20s</div>
+          <div class="card" data-value="35">👨‍💼 30s</div>
+          <div class="card" data-value="45">👨‍👩‍👧‍👦 40s</div>
+          <div class="card" data-value="55">👴 50+</div>
+        </div>
+      </div>
+      <div class="nav-buttons">
+        <span></span>
+        <button onclick="goToStep(2)">Next</button>
+      </div>
+    </div>
+
+    <div class="step" id="step2">
+      <h2>Step 2: Your Family Snapshot</h2>
+      <label>Select all that apply:</label>
+      <div class="card-grid" id="familyStatus">
+        <div class="card" data-value="single">Just me</div>
+        <div class="card" data-value="married-nokids">Married, no kids</div>
+        <div class="card" data-value="married-kids">Married with children</div>
+        <div class="card" data-value="supporting-parents">Supporting parents</div>
+      </div>
+
+      <div id="childInput" class="form-group hidden">
+        <label>How many children?</label>
+        <input type="number" min="0" max="10" value="1" id="numChildren" />
+      </div>
+
+      <div id="parentInput" class="form-group hidden">
+        <label>How many parents do you support?</label>
+        <input type="number" min="0" max="2" value="1" id="numParents" />
+      </div>
+
+      <div class="nav-buttons">
+        <button class="secondary" onclick="goToStep(1)">Back</button>
+        <button onclick="submitStep2()">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function goToStep(step) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step' + step).classList.add('active');
+    }
+
+    document.querySelectorAll('#ageGroup .card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('#ageGroup .card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('#familyStatus .card').forEach(card => {
+      card.addEventListener('click', () => {
+        card.classList.toggle('active');
+        updateConditionalInputs();
+      });
+    });
+
+    function updateConditionalInputs() {
+      const selected = [...document.querySelectorAll('#familyStatus .card.active')]
+        .map(c => c.dataset.value);
+
+      document.getElementById('childInput').classList.toggle('hidden', !selected.includes('married-kids'));
+      document.getElementById('parentInput').classList.toggle('hidden', !selected.includes('supporting-parents'));
+    }
+
+    function submitStep2() {
+      const selectedStatuses = [...document.querySelectorAll('#familyStatus .card.active')]
+        .map(c => c.dataset.value);
+
+      const numChildren = document.getElementById('numChildren').value;
+      const numParents = document.getElementById('numParents').value;
+
+      alert("Family Status: " + selectedStatuses.join(', ') +
+            "\\nChildren: " + numChildren +
+            "\\nParents Supported: " + numParents);
+    }
+  </script>
+</body>
+</html>
